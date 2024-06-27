@@ -2,6 +2,9 @@
 ## video for understamding absolute basics of cs 
 youtu.be/y2kg3MOk1sY?si=LmyS48PnrgYqzUt - add https:// before - basics of cs by freecodecamp 
 
+## video for understamding git
+https://www.youtube.com/watch?v=Ez8F0nW6S-w
+
 ## For computer hardware
 Branch Education - youtube channel also saved in watch later
 
