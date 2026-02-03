@@ -1,0 +1,116 @@
+setting up git without admin access Temporary (current session only)
+
+- download PortableGit-2.52.0-64-bit.7z and use 7 zip to extract 
+- Press Win + R -> Type cmdopen -> cmd prompt
+- set git path -> set PATH=%PATH%;C:\Users\METGUDP\Downloads\PortableGit-2.52.0-64-bit.7z\bin;C:\Users\METGUDP\Downloads\PortableGit-2.52.0-64-bit.7z\usr\bin
+- git --version -> git version 2.52.0.windows.1
+- create and open dir with cd cmd
+
+- git clone https://github.com/MBSE/klh-crs-automation.git
+-> Cloning into 'klh-advisor-automation'...
+remote: Enumerating objects: 850, done.
+remote: Counting objects: 100% (250/250), done.
+remote: Compressing objects: 100% (153/153), done.
+remote: Total 850 (delta 52), reused 166 (delta 25), pack-reused 600 (from 1)
+Receiving objects: 100% (850/850), 35.67 MiB | 64.42 MiB/s, done.
+Resolving deltas: 100% (299/299), done.
+
+- dir /s /b /o -> /O List by files in sorted order.
+- cd klh-advisor-automation
+- git status
+-> On branch master
+Your branch is up to date with 'origin/master'.
+
+- git branch -a -> To see remote branches
+- git switch feature/bug-fix -> Switch to an existing branch
+- git checkout branch-name -> older branch name
+
+git commit 
+- git status -> to Untracked files (new), Modified files (changed), Staged files (ready to commit)
+- git add . -> Adds all modified + new files in the current directory and below
+- git add file1.txt file2.txt -> Commit multiple specific files
+- git add path\to\file.txt -> Commit a specific file
+- git add -p -> Interactively choose parts of files (advanced & powerful)
+- git status -> Verify what will be committed
+- git commit -m "Your commit message here"
+ eg: after git status 
+Changes not staged for commit:
+ (use "git add/rm <file>..." to update what will be committed)
+ (use "git restore <file>..." to discard changes in working directory)
+ deleted: KMTMailTriggerUpdateSite/features/kmt-mail-trigger-feature_1.0.0.202510040630.jar modified: kmt-mail-trigger-plugin/src/main/java/com/mbag/klh/MailTrigger.java
+ modified: kmt-mail-trigger-updatesite/artifacts.jar
+ modified: kmt-mail-trigger-updatesite/content.jar
+ deleted: kmt-mail-trigger-updatesite/features/kmt-mail-trigger-feature_1.0.0.202511191123.jar
+ deleted: kmt-mail-trigger-updatesite/plugins/kmt-mail-trigger-plugin_1.0.0.202511191123.jar
+ modified: kmt-mail-trigger-updatesite/site.xml
+Untracked files:
+ (use "git add <file>..." to include in what will be committed)
+ kmt-mail-trigger-updatesite/features/kmt-mail-trigger-feature_1.0.0.202601281601.jar
+ kmt-mail-trigger-updatesite/plugins/kmt-mail-trigger-plugin_1.0.0.202601281601.jar
+
+- here we have Modified files, Deleted files, Untracked (new) files (Git won’t commit anything until you stage what you want.)
+
+- git diff path\to\file -> See changes in a file (not staged yet) 
+- git diff kmt-mail-trigger-plugin/src/main/java/com/mbag/klh/MailTrigger.java
+- git log -p -- path\to\file -> See change history of a file (who changed what)
+
+
+- git restore --staged path\to\file -> Remove specific files from the commit
+- git restore --staged kmt-mail-trigger-updatesite/artifacts.jar
+- git reset -> Unstage everything (start over)
+
+after git commit do git push. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
