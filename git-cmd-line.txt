@@ -62,6 +62,17 @@ Untracked files:
 after git commit do git push. 
 
 
+fixing merge conflicts in github desktop:
+
+PR form dev branch to feature branch 
+clone repo and switch to develop branch 
+- git checkout develop
+- git checkout feature/metgudp
+- git branch -> feature/metgudp
+- git merge develop -> merges code to feature branch 
+
+
+
 
 
 
