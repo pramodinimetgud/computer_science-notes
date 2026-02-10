@@ -124,53 +124,7 @@ index 6e6da89..2408c0a 100644
 :
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+to escape from code diff and such -> wq or qw try these heys is ctrl + X or ctrl + C does not work 
 
 
 
