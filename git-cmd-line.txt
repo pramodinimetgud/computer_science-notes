@@ -72,6 +72,59 @@ clone repo and switch to develop branch
 - git merge develop -> merges code to feature branch 
 
 
+C:\Users\included\crs-dev\klh-crs-automation>git pull
+remote: Enumerating objects: 11, done.
+remote: Counting objects: 100% (11/11), done.
+remote: Compressing objects: 100% (7/7), done.
+remote: Total 11 (delta 1), reused 0 (delta 0), pack-reused 0 (from 0)
+Unpacking objects: 100% (11/11), 8.30 KiB | 37.00 KiB/s, done.
+From https://github.com/u/klh-crs-automation
+   2270a72..0eda2d9  develop    -> origin/develop
+   78dc790..3c20583  feature/update-modified-due-date-implementation -> origin/feature/update-modified-due-date-implementation
+Updating 2270a72..0eda2d9
+Fast-forward
+ .../src/main/java/com/mbag/klh/KlhCrsAutomationPlugin.java           | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+C:\Users\included\crs-dev\klh-crs-automation>git show
+commit 0eda2d925937c2a99b2dcbc1f9b726bae0b127e6 (HEAD -> develop, origin/develop)
+Merge: 2270a72 3c20583
+Author: PRAMOD GUD <email>
+Date:   Tue Feb 10 18:28:06 2026 +0530
+
+    Merge pull request #35 from MBSE/feature/update-modified-due-date-implementation
+
+    COMPRE-4245-Update KlhCrsAutomationPlugin.java
+
+
+C:\Users\included\crs-dev\klh-crs-automation>git diff 2270a72..0eda2d9
+diff --git a/klh-crs-automation-plugin/src/main/java/com/mbag/klh/KlhCrsAutomationPlugin.java b/klh-crs-automation-plugin/src/main/java/com/mbag/klh/KlhCrsAutomationPlugin.java
+index 6e6da89..2408c0a 100644
+--- a/klh-crs-automation-plugin/src/main/java/com/mbag/klh/KlhCrsAutomationPlugin.java
++++ b/klh-crs-automation-plugin/src/main/java/com/mbag/klh/KlhCrsAutomationPlugin.java
+@@ -453,7 +453,7 @@ public class KlhCrsAutomationPlugin extends AbstractService implements IOperatio
+                                                                logHelperUtil.LOG.info("Approvers out the loop:  " + approvers);
+                                                        }
+                                                        addApproval(newState, collector, approvers, monitor, workItemServer, role,
+-                                                                       logHelperUtil, dueTime);
++                                                                       logHelperUtil);
+                                                }
+                                        }
+                                }
+@@ -675,8 +675,7 @@ public class KlhCrsAutomationPlugin extends AbstractService implements IOperatio
+        }
+
+        private void addApproval(IWorkItem workItem, IParticipantInfoCollector collector, IContributorHandle[] approvers,
+-                       IProgressMonitor monitor, IWorkItemServer workitemService, String role, LogHelperUtil logHelperUtil,
+-                       Timestamp dueTime) throws TeamRepositoryException {
++                       IProgressMonitor monitor, IWorkItemServer workitemService, String role, LogHelperUtil logHelperUtil) throws TeamRepositoryException {
+                logHelperUtil.LOG.info("In add approval method");
+                logHelperUtil.LOG.info("In add approval method: " + approvers);
+                if (approvers.length == 0) {
+:
+
+
+
 
 
 
