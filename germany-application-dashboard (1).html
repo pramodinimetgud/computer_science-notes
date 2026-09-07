@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Summer 2027 — Embedded Systems Application Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12161c;
+  --ink-2:#1d242e;
+  --paper:#e9ece7;
+  --paper-2:#f3f5f1;
+  --rule:#c3cabf;
+  --muted:#5f6a72;
+  --signal:#d98613;
+  --verified:#1c6b62;
+  --alert:#a8392b;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.55;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 96px}
+
+/* ---------- masthead ---------- */
+.masthead{padding:44px 0 28px;border-bottom:2px solid var(--ink)}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 14px
+}
+h1{
+  font-family:var(--cond);font-weight:700;font-size:clamp(30px,6.2vw,60px);
+  line-height:.98;letter-spacing:-.02em;margin:0 0 16px;max-width:16ch
+}
+.standfirst{margin:0;max-width:60ch;color:var(--ink-2)}
+
+.counter{
+  margin-top:28px;display:flex;flex-wrap:wrap;gap:10px 34px;align-items:baseline;
+  padding-top:20px;border-top:1px solid var(--rule)
+}
+.counter .n{font-family:var(--cond);font-weight:700;font-size:clamp(38px,9vw,62px);line-height:1;letter-spacing:-.03em}
+.counter .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.counter .to{font-family:var(--mono);font-size:13px;color:var(--ink-2)}
+
+/* ---------- sections ---------- */
+section{padding:52px 0 0}
+h2{
+  font-family:var(--cond);font-weight:700;font-size:26px;letter-spacing:-.01em;
+  margin:0 0 4px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap
+}
+h2 .tag{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.lede{margin:0 0 26px;color:var(--muted);max-width:66ch;font-size:14px}
+
+/* ---------- signature: deadline ruler ---------- */
+.ruler{
+  position:relative;margin:8px 0 0;padding:56px 0 84px;
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)
+}
+.axis{position:relative;height:3px;background:var(--ink)}
+.tick{position:absolute;top:0;transform:translateX(-50%);text-align:center}
+.tick .stem{width:1px;height:22px;background:var(--ink);margin:0 auto}
+.tick .dot{width:11px;height:11px;border-radius:50%;background:var(--paper);border:3px solid var(--ink);margin:-7px auto 0}
+.tick.is-soft .dot{border-style:dashed;border-color:var(--muted)}
+.tick .cap{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;line-height:1.35;
+  margin-top:8px;white-space:nowrap;color:var(--ink-2)
+}
+.tick .cap b{display:block;font-weight:600;font-size:11.5px}
+.tick.up{top:auto;bottom:0}
+.tick.up .stem{margin-bottom:0}
+.now{position:absolute;top:-46px;bottom:-72px;width:2px;background:var(--alert);transform:translateX(-50%)}
+.now span{
+  position:absolute;top:-4px;left:8px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--alert);white-space:nowrap
+}
+.ruler-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ruler-inner{min-width:780px}
+
+/* ---------- ECTS panel ---------- */
+.ects{
+  display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:32px;
+  background:var(--ink);color:var(--paper-2);padding:30px;margin-top:8px
+}
+.ects .big{font-family:var(--cond);font-weight:700;font-size:66px;line-height:.9;letter-spacing:-.03em}
+.ects .big small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9aa6ac;margin-top:12px;font-weight:400}
+.ects table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px}
+.ects th{text-align:left;font-weight:500;color:#9aa6ac;border-bottom:1px solid #333c46;padding:0 0 8px;letter-spacing:.06em;text-transform:uppercase;font-size:10px}
+.ects td{padding:7px 0;border-bottom:1px solid #232b34}
+.ects td:last-child,.ects th:last-child{text-align:right}
+.ects tr.sum td{border-bottom:none;border-top:2px solid #46525d;font-weight:600;color:#fff;padding-top:10px}
+.ects .note{grid-column:1/-1;font-size:13px;color:#b6c0c6;margin:4px 0 0;max-width:70ch}
+.ects .note b{color:var(--signal);font-weight:600}
+
+/* ---------- tables ---------- */
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--rule);background:var(--paper-2)}
+table.grid{width:100%;border-collapse:collapse;min-width:720px;font-size:13.5px}
+table.grid th{
+  font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  text-align:left;padding:12px 14px;background:var(--ink);color:var(--paper-2);font-weight:500;white-space:nowrap
+}
+table.grid td{padding:13px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+table.grid tr:last-child td{border-bottom:none}
+table.grid .uni{font-weight:600}
+table.grid .prog{color:var(--ink-2)}
+.date{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.date.hot{color:var(--alert);font-weight:600}
+.pill{
+  display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;padding:3px 7px;border:1px solid currentColor;white-space:nowrap
+}
+.pill.uni{color:var(--verified)}
+.pill.fh{color:var(--signal)}
+.pill.priv{color:var(--alert)}
+.flag{
+  display:block;margin-top:7px;font-size:12.5px;color:var(--alert);
+  padding-left:12px;border-left:2px solid var(--alert)
+}
+.flag.check{color:var(--muted);border-left-color:var(--muted)}
+.flag.check::before,.flag::before{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  display:block;opacity:.85
+}
+.flag::before{content:"Blocker"}
+.flag.check::before{content:"Verify yourself"}
+
+/* ---------- rank columns ---------- */
+.ranks{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.rank-col{background:var(--paper-2);border:1px solid var(--rule);padding:22px}
+.rank-col h3{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  margin:0 0 4px;color:var(--muted);font-weight:500
+}
+.rank-col .sub{margin:0 0 18px;font-size:12.5px;color:var(--muted)}
+ol.rank{list-style:none;counter-reset:r;margin:0;padding:0}
+ol.rank li{
+  counter-increment:r;display:grid;grid-template-columns:26px 1fr;gap:12px;
+  padding:11px 0;border-top:1px solid var(--rule)
+}
+ol.rank li::before{
+  content:counter(r,decimal-leading-zero);font-family:var(--mono);font-size:11px;
+  color:var(--muted);padding-top:3px
+}
+ol.rank .name{font-weight:600;display:block}
+ol.rank .why{font-size:12.5px;color:var(--muted);display:block;margin-top:2px}
+.tierhead{
+  font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink);border-top:2px solid var(--ink);padding-top:10px;margin-top:14px
+}
+.tierhead:first-of-type{margin-top:0}
+ul.tier{list-style:none;margin:0;padding:0}
+ul.tier li{padding:8px 0;border-top:1px solid var(--rule);font-size:13.5px}
+ul.tier li:first-child{border-top:none}
+ul.tier .name{font-weight:600}
+ul.tier .why{display:block;font-size:12.5px;color:var(--muted)}
+
+/* ---------- actions ---------- */
+.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.act{background:var(--paper-2);padding:20px}
+.act .num{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted)}
+.act h4{font-family:var(--cond);font-size:18px;margin:6px 0 6px;font-weight:700}
+.act p{margin:0;font-size:13px;color:var(--ink-2)}
+.act.urgent{background:var(--ink);color:var(--paper-2)}
+.act.urgent .num{color:var(--signal)}
+.act.urgent p{color:#b6c0c6}
+
+footer{
+  margin-top:56px;padding-top:20px;border-top:2px solid var(--ink);
+  font-family:var(--mono);font-size:11px;color:var(--muted);
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
+}
+
+/* ---------- Saarland deep-dive ---------- */
+.uni-band{
+  background:var(--ink);color:var(--paper-2);margin:64px -20px 0;padding:38px 20px 34px;
+}
+.uni-band .wrapin{max-width:1040px;margin:0 auto}
+.uni-band .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--signal);margin:0 0 10px}
+.uni-band h2{font-family:var(--cond);font-weight:700;font-size:clamp(30px,7vw,54px);line-height:1;letter-spacing:-.02em;margin:0 0 8px;color:#fff}
+.uni-band .sub{margin:0;font-family:var(--mono);font-size:13px;color:#9aa6ac}
+.factstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:22px;margin-top:28px;padding-top:22px;border-top:1px solid #333c46}
+.factstrip div .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#859299;display:block;margin-bottom:5px}
+.factstrip div .v{font-family:var(--cond);font-weight:700;font-size:19px;color:#fff;line-height:1.15}
+.sar{padding-top:44px}
+.sar h3{font-family:var(--cond);font-weight:700;font-size:21px;margin:0 0 10px;letter-spacing:-.01em}
+.sar p{margin:0 0 14px;max-width:70ch}
+.panel{background:var(--paper-2);border:1px solid var(--rule);padding:22px;margin-bottom:20px}
+.panel.warn{border-left:4px solid var(--alert)}
+.panel.good{border-left:4px solid var(--verified)}
+.kv{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr);gap:10px 20px;font-size:13.5px}
+.kv dt{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:2px}
+.kv dd{margin:0}
+table.mods{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}
+table.mods th{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;text-align:left;padding:11px 12px;background:var(--ink);color:var(--paper-2);font-weight:500;white-space:nowrap}
+table.mods td{padding:11px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+table.mods td.m{font-weight:600;min-width:150px}
+table.mods td.m em{display:block;font-style:normal;font-weight:400;font-size:11.5px;color:var(--muted);margin-top:2px}
+table.mods td.c{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+table.mods tr.grp td{background:var(--ink-2);color:var(--paper-2);font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:8px 12px}
+.pill.en{color:var(--verified)}
+.pill.de{color:var(--alert)}
+.pill.both{color:var(--signal)}
+.pill.wi{color:#2f5d86}
+.pill.su{color:#8a6410}
+ul.remember{list-style:none;margin:0;padding:0}
+ul.remember li{padding:12px 0 12px 16px;border-top:1px solid var(--rule);border-left:2px solid var(--rule);font-size:13.5px;margin-bottom:0}
+ul.remember li:first-child{border-top:none}
+ul.remember b{display:block;font-family:var(--cond);font-size:16px;margin-bottom:2px}
+@media (max-width:720px){
+  .kv{grid-template-columns:1fr;gap:2px 0}
+  .kv dd{margin-bottom:10px}
+  .uni-band{margin:48px -20px 0;padding:28px 20px 26px}
+  .ects{grid-template-columns:1fr;padding:22px;gap:22px}
+  .ects .big{font-size:52px}
+  .ranks{grid-template-columns:1fr}
+  .masthead{padding:32px 0 22px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .reveal{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
+  .reveal.in{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">Application board · Summer semester 2027 · Embedded systems</p>
+  <h1>Everything on the table, and what still needs checking</h1>
+  <p class="standfirst">Mathematics ECTS is calculated and no longer the blocker. What governs the plan now is a sequence of four deadlines, an unverified IELTS date, and a uni-assist report that does not yet exist.</p>
+  <div class="counter">
+    <div><span class="n" id="wk">—</span> <span class="lbl">weeks to first deadline</span></div>
+    <div class="to">RPTU Kaiserslautern closes 31 Oct 2026</div>
+  </div>
+</header>
+
+<section class="reveal">
+  <h2>Deadline ruler <span class="tag">30 Aug 2026 → semester start</span></h2>
+  <p class="lede">Solid markers are dates confirmed against a university or DAAD page. Dashed markers are dates that conflict across sources or that I could not confirm — treat those as unresolved until you have read the page yourself.</p>
+  <div class="ruler-scroll">
+   <div class="ruler-inner">
+    <div class="ruler">
+      <div class="now" style="left:0.5%"><span>Today</span></div>
+      <div class="axis">
+        <div class="tick" style="left:29%"><div class="dot"></div><div class="stem"></div><div class="cap"><b>31 Oct</b>RPTU ESY + A&amp;C</div></div>
+        <div class="tick is-soft up" style="left:36%"><div class="cap"><b>15 Nov</b>Saarland · HKA?</div><div class="stem"></div><div class="dot"></div></div>
+        <div class="tick" style="left:49.5%"><div class="dot"></div><div class="stem"></div><div class="cap"><b>15 Dec</b>Freiburg ESE</div></div>
+        <div class="tick up" style="left:57.5%"><div class="cap"><b>31 Dec</b>Bremerhaven</div><div class="stem"></div><div class="dot"></div></div>
+        <div class="tick" style="left:64.5%"><div class="dot"></div><div class="stem"></div><div class="cap"><b>15 Jan</b>KIT · HKA general</div></div>
+        <div class="tick is-soft up" style="left:72%"><div class="cap"><b>31 Jan</b>Duisburg-Essen</div><div class="stem"></div><div class="dot"></div></div>
+        <div class="tick is-soft" style="left:88%"><div class="dot"></div><div class="stem"></div><div class="cap"><b>Jan–Mar</b>TU Wien window</div></div>
+      </div>
+    </div>
+   </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <h2>The mathematics number <span class="tag">settled</span></h2>
+  <p class="lede">Total degree credits 175 over four years, so the conversion multiplier is 240 ÷ 175 = 1.3714. Every 4-credit course converts to 5.49 ECTS.</p>
+  <div class="ects">
+    <div>
+      <div class="big">27.43<small>Mathematics ECTS</small></div>
+    </div>
+    <div>
+      <table>
+        <tr><th>Code</th><th>Course</th><th>Cr</th><th>ECTS</th></tr>
+        <tr><td>MA110</td><td>Advanced Calculus</td><td>4.0</td><td>5.49</td></tr>
+        <tr><td>MA210</td><td>Multivariable Calculus</td><td>4.0</td><td>5.49</td></tr>
+        <tr><td>MA310</td><td>Fourier / Integral Transforms</td><td>4.0</td><td>5.49</td></tr>
+        <tr><td>MA411</td><td>Probability &amp; Stochastic Processes</td><td>4.0</td><td>5.49</td></tr>
+        <tr><td>EC510</td><td>Linear Algebra &amp; Applications</td><td>4.0</td><td>5.49</td></tr>
+        <tr class="sum"><td colspan="2">Total</td><td>20.0</td><td>27.43</td></tr>
+      </table>
+    </div>
+    <p class="note">Without EC510 the figure drops to <b>21.94</b>, which fails almost everything — so the registrar letter classifying it as mathematics is still worth having. If a programme words its requirement as <b>mathematics and natural sciences</b> rather than mathematics alone, add PH210, PH22L, CH110 and CH12L and the figure becomes <b>42.51</b>. Read that wording on every page.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <h2>Embedded systems &amp; embedded software <span class="tag">summer 2027 intake</span></h2>
+  <div class="tbl-scroll">
+    <table class="grid">
+      <tr><th>University</th><th>Programme</th><th>Type</th><th>Non-EU deadline</th><th>Tuition</th></tr>
+      <tr>
+        <td class="uni">RPTU Kaiserslautern-Landau</td>
+        <td class="prog">M.Sc. Embedded Computing Systems (ESY)</td>
+        <td><span class="pill uni">Universität</span></td>
+        <td class="date hot">1 May – 31 Oct 2026</td>
+        <td class="date">Free</td>
+      </tr>
+      <tr>
+        <td class="uni">Saarland University</td>
+        <td class="prog">M.Sc. Embedded Systems</td>
+        <td><span class="pill uni">Universität</span></td>
+        <td class="date">15 Nov 2026
+          <span class="flag check">Sources conflict — university page and DAAD describe different windows. Ask which applies to SS27.</span>
+        </td>
+        <td class="date">€394.30/sem fee</td>
+      </tr>
+      <tr>
+        <td class="uni">University of Freiburg</td>
+        <td class="prog">M.Sc. Embedded Systems Engineering</td>
+        <td><span class="pill uni">Universität</span></td>
+        <td class="date">15 Dec 2026</td>
+        <td class="date">€1,500/sem</td>
+      </tr>
+      <tr>
+        <td class="uni">Hochschule Bremerhaven</td>
+        <td class="prog">M.Sc. Embedded Systems Design</td>
+        <td><span class="pill fh">FH</span></td>
+        <td class="date">31 Dec 2026 · uni-assist
+          <span class="flag">German A2 listed as a requirement. You are at failed A1.</span>
+        </td>
+        <td class="date">Free</td>
+      </tr>
+      <tr>
+        <td class="uni">TU Chemnitz</td>
+        <td class="prog">M.Sc. Embedded Systems</td>
+        <td><span class="pill uni">Universität</span></td>
+        <td class="date">Summer entry needs examination board approval
+          <span class="flag check">A third-party source claims German A1 at entry, A2 by semester three.</span>
+        </td>
+        <td class="date">Free</td>
+      </tr>
+      <tr>
+        <td class="uni">RPTU (DISC)</td>
+        <td class="prog">Distance Master: Software Engineering for Embedded Systems</td>
+        <td><span class="pill uni">Universität</span></td>
+        <td class="date">Varies — distance / part-time</td>
+        <td class="date">Fee-based</td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<section class="reveal">
+  <h2>Adjacent fields <span class="tag">systems · IoT · sensors · control</span></h2>
+  <div class="tbl-scroll">
+    <table class="grid">
+      <tr><th>University</th><th>Programme</th><th>Type</th><th>Non-EU deadline</th><th>Tuition</th></tr>
+      <tr>
+        <td class="uni">RPTU Kaiserslautern-Landau</td>
+        <td class="prog">M.Sc. Automation and Control</td>
+        <td><span class="pill uni">Universität</span></td>
+        <td class="date hot">1 May – 31 Oct 2026
+          <span class="flag check">Confirm A&amp;C shares the ESY window.</span>
+        </td>
+        <td class="date">Free</td>
+      </tr>
+      <tr>
+        <td class="uni">Uni Duisburg-Essen (ISE)</td>
+        <td class="prog">M.Sc. Automation and Control Engineering · M.Sc. Automation and Safety</td>
+        <td><span class="pill uni">Universität</span></td>
+        <td class="date">1 Nov 2026 – 31 Jan 2027
+          <span class="flag">Half the lectures are in German. B2 German required at enrolment.</span>
+        </td>
+        <td class="date">~€320 contribution</td>
+      </tr>
+      <tr>
+        <td class="uni">Karlsruhe UAS (HKA)</td>
+        <td class="prog">M.Sc. Sensor Systems Technology</td>
+        <td><span class="pill fh">FH</span></td>
+        <td class="date">Conflicting
+          <span class="flag check">DAAD says January 2027; another source says non-EU closes 15 Nov 2026. Summer-only intake, 25 places, local NC.</span>
+        </td>
+        <td class="date">€1,500/sem + €194.70</td>
+      </tr>
+      <tr>
+        <td class="uni">KIT</td>
+        <td class="prog">M.Sc. Electrical Engineering and Information Technology</td>
+        <td><span class="pill uni">Universität</span></td>
+        <td class="date">15 Jan 2027
+          <span class="flag check">Your notes recorded KIT floors as 14 maths + 19 EE + 17 digital. You are at 27.43 maths and well over 100 EE. Check whether those floors are current.</span>
+        </td>
+        <td class="date">€1,500/sem</td>
+      </tr>
+      <tr>
+        <td class="uni">KIT</td>
+        <td class="prog">M.Sc. Information Systems Engineering and Management</td>
+        <td><span class="pill uni">Universität</span></td>
+        <td class="date">Rolling — June advised for visa</td>
+        <td class="date">€1,500/sem</td>
+      </tr>
+      <tr>
+        <td class="uni">Hochschule Nordhausen</td>
+        <td class="prog">M.Eng. Computer Engineering for IoT Systems</td>
+        <td><span class="pill fh">FH</span></td>
+        <td class="date">Unconfirmed
+          <span class="flag check">Publishes intake quotas covering SS2027 — confirm summer entry is open.</span>
+        </td>
+        <td class="date">Free</td>
+      </tr>
+      <tr>
+        <td class="uni">FH Technikum Wien <span style="color:var(--muted);font-weight:400">· Austria</span></td>
+        <td class="prog">M.Sc. Internet of Things &amp; Smart Systems</td>
+        <td><span class="pill fh">FH</span></td>
+        <td class="date">31 Mar (winter)
+          <span class="flag check">Summer availability unconfirmed. Double-degree option with UAS Luzern.</span>
+        </td>
+        <td class="date">€3,000 + €25.20</td>
+      </tr>
+      <tr>
+        <td class="uni">UE Germany, Potsdam</td>
+        <td class="prog">M.Sc. IoT Devices and Smart Services</td>
+        <td><span class="pill priv">Private</span></td>
+        <td class="date">March and September starts</td>
+        <td class="date">Private fees</td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<section class="reveal">
+  <h2>How good are they <span class="tag">institution, not fit</span></h2>
+  <p class="lede">German quality is subject-specific rather than institution-wide, so a mid-tier university can hold a top-five department. These two columns disagree with each other on purpose.</p>
+  <div class="ranks">
+    <div class="rank-col">
+      <h3>Academic standing</h3>
+      <p class="sub">Reputation and research weight in this field.</p>
+
+      <div class="tierhead">Tier 1 — unambiguously strong</div>
+      <ul class="tier">
+        <li><span class="name">KIT</span><span class="why">TU9, Excellence University. Strongest name here.</span></li>
+        <li><span class="name">Freiburg</span><span class="why">Excellence University, centuries of standing.</span></li>
+      </ul>
+
+      <div class="tierhead">Tier 2 — elite in this field</div>
+      <ul class="tier">
+        <li><span class="name">Saarland</span><span class="why">Two Max Planck institutes, DFKI, CISPA on one campus.</span></li>
+        <li><span class="name">RPTU Kaiserslautern</span><span class="why">MPI-SWS, DFKI, two Fraunhofer institutes.</span></li>
+      </ul>
+
+      <div class="tierhead">Tier 3 — solid</div>
+      <ul class="tier">
+        <li><span class="name">Duisburg-Essen</span><span class="why">Large, respectable, not elite.</span></li>
+        <li><span class="name">TU Chemnitz</span><span class="why">Mid-tier technical university.</span></li>
+      </ul>
+
+      <div class="tierhead">Tier 4 — decent applied sciences</div>
+      <ul class="tier">
+        <li><span class="name">Karlsruhe HKA</span><span class="why">Well regarded, strong region.</span></li>
+        <li><span class="name">FH Technikum Wien</span><span class="why">Austria's largest technical FH.</span></li>
+      </ul>
+
+      <div class="tierhead">Tier 5 and below</div>
+      <ul class="tier">
+        <li><span class="name">Bremerhaven · Nordhausen</span><span class="why">Small, low-profile, functional.</span></li>
+        <li><span class="name">UE Germany</span><span class="why">Private. German engineering discounts private degrees.</span></li>
+      </ul>
+    </div>
+
+    <div class="rank-col">
+      <h3>Job market by location</h3>
+      <p class="sub">Where the Werkstudent → thesis → offer path actually runs.</p>
+      <ol class="rank">
+        <li><span class="name">Karlsruhe</span><span class="why">Major German IT region; Stuttgart's automotive belt an hour away.</span></li>
+        <li><span class="name">Ruhr — Duisburg-Essen</span><span class="why">Germany's largest agglomeration. Düsseldorf and Cologne adjacent.</span></li>
+        <li><span class="name">Vienna</span><span class="why">Capital-city market of roughly two million.</span></li>
+        <li><span class="name">Freiburg</span><span class="why">Sick AG at Waldkirch — a leading industrial sensor maker. Basel medtech close.</span></li>
+        <li><span class="name">Chemnitz</span><span class="why">VW engine plant; Dresden's Silicon Saxony ~70km.</span></li>
+        <li><span class="name">Potsdam / Berlin</span><span class="why">Big market, but software and startups more than embedded hardware.</span></li>
+        <li><span class="name">Kaiserslautern</span><span class="why">Fraunhofer and DFKI are the main employers. Small city.</span></li>
+        <li><span class="name">Saarbrücken</span><span class="why">Ford Saarlouis ended production Nov 2025, ~1,700 redundancies. Research, not regional industry.</span></li>
+        <li><span class="name">Bremerhaven</span><span class="why">Port city — wind, shipping, food. Bremen an hour away carries it.</span></li>
+        <li><span class="name">Nordhausen</span><span class="why">Small Thuringian town. Weakest here.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <h2>Open actions <span class="tag">ordered by what blocks what</span></h2>
+  <div class="actions">
+    <div class="act urgent">
+      <div class="num">01 · critical path</div>
+      <h4>Find your IELTS test date</h4>
+      <p>Two-year validity. If it has expired, a retake plus results runs four to six weeks against a nine-week deadline. This decides whether Summer 2027 is possible at all.</p>
+    </div>
+    <div class="act urgent">
+      <div class="num">02 · critical path</div>
+      <h4>Start a general uni-assist VPD</h4>
+      <p>Four to six weeks. The TUM one is not transferable. Holding a valid report also moves the Bremerhaven deadline from 31 Dec to 15 Feb.</p>
+    </div>
+    <div class="act">
+      <div class="num">03</div>
+      <h4>Request the EC510 letter</h4>
+      <p>Registrar or HOD, classifying Linear Algebra and Applications as mathematics. Indian universities are slow — start now, not in November.</p>
+    </div>
+    <div class="act">
+      <div class="num">04</div>
+      <h4>Resolve the notice-period collision</h4>
+      <p>Three months' notice, decisions arriving January to February, semester starting March or April. Ask each department directly whether admission can be deferred.</p>
+    </div>
+    <div class="act">
+      <div class="num">05</div>
+      <h4>Book the German A1 retake</h4>
+      <p>Not needed for admission at most of these, but RPTU requires A1 within the first year and Bremerhaven lists A2 up front.</p>
+    </div>
+    <div class="act">
+      <div class="num">06</div>
+      <h4>Drop the GRE</h4>
+      <p>Nothing on this list indicates a requirement. Stop spending attention on it.</p>
+    </div>
+  </div>
+</section>
+
+<div class="uni-band">
+  <div class="wrapin">
+    <p class="kicker">Programme dossier · researched in depth</p>
+    <h2>Saarland University</h2>
+    <p class="sub">M.Sc. Embedded Systems · Faculty of Mathematics and Computer Science</p>
+    <div class="factstrip">
+      <div><span class="k">Deadline SS27</span><span class="v">15 Nov 2026</span></div>
+      <div><span class="k">Decision</span><span class="v">By mid-January</span></div>
+      <div><span class="k">Lectures start</span><span class="v">Mid-April</span></div>
+      <div><span class="k">Duration</span><span class="v">4 semesters · 120 CP</span></div>
+      <div><span class="k">Tuition</span><span class="v">None · €394.30 fee</span></div>
+      <div><span class="k">Entry</span><span class="v">Winter &amp; summer</span></div>
+    </div>
+  </div>
+</div>
+
+<section class="sar reveal">
+  <h3>Deadlines</h3>
+  <div class="panel">
+    <dl class="kv">
+      <dt>Summer semester</dt><dd><b>15 November</b> — decision at the latest by mid-January, usually communicated towards the end of January. Lectures begin mid-April.</dd>
+      <dt>Early summer route</dt><dd>Applicants who apply by <b>15 May</b> for the following summer semester receive an admission letter by mid-July if the Master's commission decides positively. For SS27 this date has passed.</dd>
+      <dt>Winter semester</dt><dd>15 May, decision by mid-July. Fallback if SS27 doesn't land.</dd>
+      <dt>Late applications</dt><dd>Complete applications received after a deadline roll automatically into the next semester's decision round.</dd>
+      <dt>Visa</dt><dd>They explicitly encourage starting the visa process before a final decision arrives.</dd>
+      <dt>Closures</dt><dd>Response times stretch to several days near deadlines, and the university closes over the winter holidays — right before the January decision.</dd>
+    </dl>
+  </div>
+
+  <h3>Requirements</h3>
+  <div class="panel warn">
+    <dl class="kv">
+      <dt>Degree</dt><dd>Bachelor's in computational engineering, embedded systems, computer science, electrical engineering, mechatronics or a related field. At least 180 CP. ECE qualifies.</dd>
+      <dt>Grades</dt><dd><b>CGPA ≥ 75% or 3.00/4.00 AND ranking in the top 10% of the graduating class.</b> Your 8.74/10 clears the first. The class-rank certificate is the open question — and note this appears only in the department's application guide, not in the binding regulations.</dd>
+      <dt>GRE / GATE</dt><dd>Required for applicants without an EHEA, Swiss or UK degree. <b>No minimum score.</b> Home editions accepted. Subject tests and prep tests do not count. Your V148/Q156/AWA 2.5 satisfies it — check the test date. GATE 2027 sits in February, too late for this deadline.</dd>
+      <dt>English</dt><dd>C1. IELTS Academic minimum 7.0 — you have 7.5. <b>Expired tests and home editions are accepted.</b> Medium-of-instruction letters are explicitly not accepted.</dd>
+      <dt>References</dt><dd>Two review forms completed by referees inside the application system. At least one must know you academically. Letters sent by post are not accepted. Your application is incomplete until both forms arrive.</dd>
+      <dt>APS</dt><dd>Required for India. You have it.</dd>
+      <dt>Also needed</dt><dd>Personal statement, full CV, certified higher-education entrance qualification, and a certified record of <b>all courses with content descriptions and literature references</b> — this is the route for EC510.</dd>
+      <dt>Decided by</dt><dd>The Examination Board. No interview appears in the documented process. Rejections come without individual reasoning.</dd>
+      <dt>Selectivity</dt><dd>Formally listed as unrestricted entry, but the guide states admissions are very competitive and only the best of hundreds of applicants are accepted. Treat as a reach.</dd>
+    </dl>
+  </div>
+
+  <h3>The three prerequisite areas, and where you stand</h3>
+  <div class="panel">
+    <dl class="kv">
+      <dt>I. Mathematics</dt><dd>Discrete mathematics · real analysis and multivariable calculus · linear algebra · numerical methods · stochastics.<br><b>You cover three of five.</b> Gaps: discrete mathematics, numerical methods.</dd>
+      <dt>II. Computer science</dt><dd>Functional and object-oriented programming · software development methods · formal methods.<br><b>Your weakest column</b> — roughly 24.7 ECTS against a bachelor benchmark near 56. Gaps: functional programming, formal methods.</dd>
+      <dt>III. Engineering</dt><dd>Electrical engineering · embedded systems · signal and systems theory · information theory.<br><b>Fully covered</b>, with a large margin.</dd>
+    </dl>
+  </div>
+  <p>Their reference bachelor is informatics-heavy: about 56–74 CP of computer science against roughly 37 CP of engineering, plus a 27 CP compulsory mathematics block. Your profile is the mirror image. Your three years of professional software work is therefore the central argument of the application, not a footnote — and the <b>Additional Certificates</b> field accepts MOOC certificates, which is where a functional programming or formal methods course would go.</p>
+
+  <h3>Module catalogue — all 34 core lectures</h3>
+  <p>From the module descriptions of 17 December 2024. Grouped by language, because that's the constraint that actually shapes what you can take.</p>
+  <div class="tbl-scroll">
+    <table class="mods">
+      <tr><th>Module</th><th>ECTS</th><th>Lang</th><th>What it covers</th></tr>
+
+      <tr class="grp"><td colspan="4">English — 19 modules, 150 credits</td></tr>
+      <tr><td class="m">Cyber-Physical Systems<em>Maggio · formerly "Embedded Systems"</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>The flagship. Three parts: modelling physical systems as continuous and discrete dynamical systems; control via state feedback and PID; implementation covering scheduling, communication and fault tolerance.</td></tr>
+      <tr><td class="m">Automation Systems<em>Frey</em></td><td class="c">4</td><td><span class="pill en">EN</span></td><td>Closest to your Mercedes-Benz work. Discrete-event systems, logic control, IEC 61131 languages, Petri nets, verification and validation, real-time dependability, industrial Ethernet, CAN bus, and automotive networks — LIN, CAN, FlexRay, MOST.</td></tr>
+      <tr><td class="m">Verification<em>Hermanns / Finkbeiner</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>Temporal logics, automata over infinite objects, process algebra, deductive proof systems (Floyd, Hoare, Manna/Pnueli), model checking and symbolic model checking. Directly answers their formal-methods prerequisite.</td></tr>
+      <tr><td class="m">Operating Systems<em>Druschel / Brandenburg</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>Threads and processes, synchronisation, CPU scheduling, deadlock, dynamic storage allocation, virtual memory, file storage, virtual machines.</td></tr>
+      <tr><td class="m">Distributed Systems<em>Druschel · needs OS first</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>RPC, distributed objects, caching, logging and recovery, clock and vector clocks, replication protocols, consistency models, Paxos, PBFT, DHTs, data-centre architecture.</td></tr>
+      <tr><td class="m">Computer Architecture<em>W.-J. Paul</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>Pipelined processor design with correctness proofs, DLX instruction set, forwarding, interrupt mechanisms, caches and bus protocols, MMU construction, virtual memory.</td></tr>
+      <tr><td class="m">Software Engineering<em>Apel</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>Domain analysis, feature modelling, SAT solvers for configuration reasoning, version control and build systems, aspects and pointcuts, feature interaction, variability-aware analysis, ML for performance prediction.</td></tr>
+      <tr><td class="m">Compiler Construction<em>Hack</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>Lexical, syntactic and semantic analysis, code generation for abstract and real machines, efficiency-improving transformations, program analysis foundations. Includes a compiler laboratory project.</td></tr>
+      <tr><td class="m">Security<em>Backes / Cremers</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>Basic cryptography, specification and verification of security protocols, access control, information flow analysis, network and media security, security engineering.</td></tr>
+      <tr><td class="m">Data Networks<em>Hermanns / Feldmann</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>Stochastic processes and Markov models, reliable data transfer, graph algorithms, full protocol stack from application to physical layer, TCP/UDP/SCTP, routing, congestion control, peer-to-peer.</td></tr>
+      <tr><td class="m">Internet Transport<em>Herfet · formerly Future Media Internet</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>Erasure channel theory, wireless link layers, CRCs, Time Sensitive Networking, transport-layer services, QUIC media transport, error coding under latency constraints, HTTP/RTP/DASH.</td></tr>
+      <tr><td class="m">Neural Networks: Theory &amp; Implementation<em>Klakow</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>Classification and regression, perceptron, SVMs, multi-layer perceptrons, deep learning software, autoencoders, LSTMs, RNNs, sequence-to-sequence. Relevant to your ML patent work.</td></tr>
+      <tr><td class="m">Image Processing &amp; Computer Vision<em>Weickert</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>Image transforms and wavelets, compression, enhancement, diffusion filtering, variational methods, texture analysis, segmentation, 3-D reconstruction, stereo, object recognition. Adjacent to your gesture-recognition patent.</td></tr>
+      <tr><td class="m">Digital Transmission &amp; Signal Processing<em>Herfet · formerly Telecommunications I</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>Source and channel coding, modulation, multiplexing, A/D and D/A converters, Fourier and Laplace transforms, z and Hilbert transforms, finite-field algebra for error correction.</td></tr>
+      <tr><td class="m">Audio-Visual Communication &amp; Networks<em>Herfet · formerly Telecommunications II</em></td><td class="c">9</td><td><span class="pill en">EN</span></td><td>Wireless communication systems: TDMA, FDMA, CDMA, SDMA, antennas and propagation, link budgets, MIMO channel models, turbo coding, RAKE and BLAST receivers, 802.11n, DVB-T2.</td></tr>
+      <tr><td class="m">Digital Signal Processing<em>Klakow</em></td><td class="c">6</td><td><span class="pill en">EN</span></td><td>Speech-flavoured, not a repeat of your EC550. Linear predictive coding, microphone arrays, Kalman and Wiener filters, audio feature extraction, KL transform, speaker recognition, genre classification.</td></tr>
+      <tr><td class="m">Statistical Natural Language Processing<em>Klakow</em></td><td class="c">6</td><td><span class="pill en">EN</span></td><td>Word-sense disambiguation, part-of-speech tagging, named-entity recognition, information retrieval, text classification.</td></tr>
+      <tr><td class="m">High Speed Electronics<em>Möller</em></td><td class="c">4</td><td><span class="pill en">EN</span></td><td>Bipolar transistors at the technological speed limit, differential signalling, broadband stages to 160 Gbit/s, multiplexers, phase detectors, VCOs and PLLs.</td></tr>
+      <tr><td class="m">High-Frequency Engineering<em>Möller</em></td><td class="c">4</td><td><span class="pill en">EN</span></td><td>Skin and proximity effects, transmission line modelling, S-parameters and the Smith chart, network measurement (TDR, VNA), electrical noise, optimisation strategy.</td></tr>
+
+      <tr class="grp"><td colspan="4">German or English — 2 modules, 8 credits</td></tr>
+      <tr><td class="m">Computational Electromagnetics 1<em>Dyczij-Edlinger</em></td><td class="c">4</td><td><span class="pill both">DE/EN</span></td><td>Numerical linear algebra, boundary value problems of classical electrodynamics, finite difference, finite element and boundary element methods. Lecture notes in English; you choose the language.</td></tr>
+      <tr><td class="m">Computational Electromagnetics 2<em>Dyczij-Edlinger · CEM1 recommended</em></td><td class="c">4</td><td><span class="pill both">DE/EN</span></td><td>Finite element techniques for time-harmonic fields, modal analysis of cavities and driven fields, advanced numerical solution methods. Assessed by presenting research papers.</td></tr>
+
+      <tr class="grp"><td colspan="4">German only — 13 modules, closed to you without German</td></tr>
+      <tr><td class="m">Messtechnik und Sensorik<em>Schütze</em></td><td class="c">6</td><td><span class="pill de">DE</span></td><td>Measurement uncertainty, bridges, instrumentation amplifiers, A/D converters, then sensors: temperature, radiation, Hall and MR magnetic sensors, force, pressure, acceleration, rotation rate, flow. Emphasis on miniaturised sensors. <b>The sensor course you'd most want.</b></td></tr>
+      <tr><td class="m">Systemtheorie und Regelungstechnik 1<em>Rudolph</em></td><td class="c">5–6</td><td><span class="pill de">DE</span></td><td>Linear time-invariant systems, trajectory planning, P/PI/PD/PID controllers, frequency response and Bode plots, state concept, observability, Lyapunov stability.</td></tr>
+      <tr><td class="m">Systemtheorie und Regelungstechnik 2<em>Rudolph</em></td><td class="c">5</td><td><span class="pill de">DE</span></td><td>Polynomial matrix representation, controllability criteria (Hautus, Kalman), Kalman decomposition, state-feedback tracking control, full and reduced observer design.</td></tr>
+      <tr><td class="m">Mikroelektronik 2<em>Xu</em></td><td class="c">4</td><td><span class="pill de">DE</span></td><td>IC manufacturing chain, design flow and styles, circuit and logic simulation, VHDL, logic optimisation, design for testability, layout and floorplanning.</td></tr>
+      <tr><td class="m">Mikroelektronik 3<em>Xu</em></td><td class="c">4</td><td><span class="pill de">DE</span></td><td>Analogue and mixed-signal CMOS: MOS transistors in circuits, amplifier frequency response, op-amps, reference circuits, switched-capacitor circuits, A/D and D/A converters.</td></tr>
+      <tr><td class="m">Mikroelektronik 4<em>Xu</em></td><td class="c">4</td><td><span class="pill de">DE</span></td><td>High-voltage circuits, charge pumps, automotive lamp drivers, power management, low-power design, LCD and OLED display control.</td></tr>
+      <tr><td class="m">Mikromechanische Bauelemente<em>Seidel</em></td><td class="c">4</td><td><span class="pill de">DE</span></td><td>Scaling laws, passive mechanical components, microactuator principles (electrostatic, magnetic, piezoelectric, shape-memory alloys), microfluidics, valves and pumps.</td></tr>
+      <tr><td class="m">Mikrotechnologie<em>Seidel</em></td><td class="c">4</td><td><span class="pill de">DE</span></td><td>Cleanroom technique, crystalline silicon growth, thermal oxidation and epitaxy, CVD and PVD, doping, lithography, wet and dry etching, wafer bonding, planarisation.</td></tr>
+      <tr><td class="m">Theoretische Elektrotechnik 2<em>Dyczij-Edlinger</em></td><td class="c">5</td><td><span class="pill de">DE</span></td><td>Maxwell's equations in the frequency domain, eddy currents, transmission lines and the Smith chart, wave propagation and refraction, antenna radiation fields, waveguides and resonators.</td></tr>
+      <tr><td class="m">Elektrische Antriebe<em>Nienhaus</em></td><td class="c">4</td><td><span class="pill de">DE</span></td><td>DC, synchronous and asynchronous machines — construction, operating behaviour, and electrical control. Specification and selection of electrical drives.</td></tr>
+      <tr><td class="m">Elektronik / Bauelemente<em>Möller / Wiese</em></td><td class="c">3</td><td><span class="pill de">DE</span></td><td>Active and passive components: diodes, bipolar and field-effect transistors, resistors, capacitors, inductors, integrated circuits, power supply components, power transistors, thyristors, IGBTs.</td></tr>
+      <tr><td class="m">Aufbau- und Verbindungstechnik 1<em>Wiese</em></td><td class="c">4</td><td><span class="pill de">DE</span></td><td>Electronic assembly and interconnection: die bonding, wire bonding, flip-chip and carrier-film technology, PCBs and thick-film substrates, cold pressure welding, soldering, adhesive bonding.</td></tr>
+      <tr><td class="m">Einführung in die elektromagnetische Feldsimulation<em>Dyczij-Edlinger</em></td><td class="c">4</td><td><span class="pill de">DE</span></td><td>Numerical linear algebra, boundary and initial-boundary value problems, finite difference methods, variational and weighted-residual methods, finite elements, integral equation and boundary element methods.</td></tr>
+
+      <tr class="grp"><td colspan="4">Seminars and final phase</td></tr>
+      <tr><td class="m">Seminar</td><td class="c">7</td><td><span class="pill both">DE/EN</span></td><td>Offered every semester. Independent research on a topic: reading and evaluating scientific papers, group discussion, presentation and written report. Available seminars are announced before each semester and vary by programme.</td></tr>
+      <tr><td class="m">Master Seminar<em>needs 30 CP first</em></td><td class="c">12</td><td><span class="pill both">DE/EN</span></td><td>Semester 3. Prepares the thesis topic — literature work, written elaboration, oral presentation, reading group. Must be in an area directly relevant to the thesis.</td></tr>
+      <tr><td class="m">Master Thesis<em>needs Master Seminar</em></td><td class="c">30</td><td><span class="pill both">DE/EN</span></td><td>Semester 4, six months. Written as a scientific paper showing your own substantial contribution, then a <b>30-minute colloquium</b> to establish it's your own work, held within six weeks of submission.</td></tr>
+    </table>
+  </div>
+
+  <div class="panel warn">
+    <h3>The language reality</h3>
+    <p>The programme is advertised as English-taught and the regulations say instruction is "usually English." But <b>the German-only modules are precisely the electrical engineering ones</b> — microelectronics, sensors, control theory, drives, electromagnetics, assembly technology. The English modules are the computer science ones.</p>
+    <p>Without German this becomes a CS-heavy embedded degree in practice. It is entirely completable: roughly 158 credits are reachable in English against the 61–69 you need from lectures and seminars. But the hardware half is closed until your German is strong enough.</p>
+    <p style="margin-bottom:0">Two silver linings. Mikroelektronik 2–4 are the VLSI-adjacent modules you didn't want anyway. And the handbook shows minor ECTS inconsistencies between module pages and Appendix A — Messtechnik lists 4 on its page and 6 in the appendix — so confirm credit values before planning a semester tightly.</p>
+  </div>
+
+  <h3>Programme structure</h3>
+  <div class="panel">
+    <dl class="kv">
+      <dt>Core lectures</dt><dd>27–31 graded credits from core lecture courses on embedded systems</dd>
+      <dt>Second block</dt><dd>27–31 graded credits from core lectures, advanced lectures, or seminars — only one further seminar may count here</dd>
+      <dt>Seminar</dt><dd>7 graded credits</dd>
+      <dt>Final phase</dt><dd>12 credits Master's Seminar + 30 credits thesis = 42 compulsory credits</dd>
+      <dt>Mandatory electives</dt><dd>At least 17 <b>ungraded</b> credits</dd>
+      <dt>Graded total</dt><dd>At least 103, at most 111 of the 120 credits must be graded</dd>
+      <dt>Example plan</dt><dd>S1: two core lectures (9+9), seminar (7), language course (6) = 31 · S2: two core (9+9), advanced (6), tutoring (4) = 28 · S3: two advanced (6+6), seminar (7), Master's Seminar (12) = 31 · S4: thesis = 30</dd>
+    </dl>
+  </div>
+
+  <h3>Worth remembering</h3>
+  <ul class="remember">
+    <li><b>German courses earn credits</b>Language courses count for up to 6 ungraded credits in the mandatory elective section — modern languages, not your native one. Their own example plan puts one in semester 1. Your B2 project is built into the degree, not extra to it.</li>
+    <li><b>An industrial placement counts too</b>Work placement or internship in industry, up to 6 credits, subject to Examination Board approval. That's the Werkstudent route written into the regulations.</li>
+    <li><b>Tutoring counts</b>Usually 4 credits per module for supervising undergraduate problem classes. Multiple groups permitted if from different modules. Paid work that also earns credits.</li>
+    <li><b>DFKI and Max Planck staff can supervise your thesis</b>The regulations explicitly allow the Examination Board to appoint supervisors from DFKI and the Max Planck Institutes for Informatics and for Software Systems. The PhD pipeline is in the rules, not just the geography.</li>
+    <li><b>Unused bachelor credits can transfer</b>Credits earned during your bachelor's but not counted toward it may transfer to the master's, up to 30 credits. Worth checking whether anything on your transcript qualifies.</li>
+    <li><b>Core lectures run at least every two years</b>Seminars and advanced lectures may not repeat at all. Plan around availability, not around a fixed catalogue.</li>
+    <li><b>You can retake to improve a grade</b>Core lectures may be retaken once within the same examination period during the standard study period; advanced lectures only if the lecturer announced it. Higher grade counts.</li>
+    <li><b>Study abroad needs a year's notice</b>Applications should normally reach the Examinations Office one year before the planned start date.</li>
+    <li><b>Application mechanics</b>Apply at apply.cs.uni-saarland.de. Don't register twice. You cannot upload revised documents after submitting — but referee invitations should go out early, since your application stays incomplete until both review forms arrive.</li>
+    <li><b>One contact address</b>master@cs.uni-saarland.de for all application questions. Advisers: Dr. Rahel Stoike-Sy and Barbara Schulz-Brünken.</li>
+  </ul>
+</section>
+
+<div class="uni-band">
+  <div class="wrapin">
+    <p class="kicker">Programme dossier · researched in depth</p>
+    <h2>University of Freiburg</h2>
+    <p class="sub">M.Sc. Embedded Systems Engineering · Faculty of Engineering — IMTEK + IIF</p>
+    <div class="factstrip">
+      <div><span class="k">Deadline SS27</span><span class="v">15 Dec 2026</span></div>
+      <div><span class="k">Window opens</span><span class="v">1 Nov 2026</span></div>
+      <div><span class="k">Lectures start</span><span class="v">Mid-April</span></div>
+      <div><span class="k">Duration</span><span class="v">4 semesters · 120 ECTS</span></div>
+      <div><span class="k">Tuition</span><span class="v">€1,690/sem</span></div>
+      <div><span class="k">Entry</span><span class="v">Winter &amp; summer</span></div>
+    </div>
+  </div>
+</div>
+
+<section class="sar reveal">
+  <h3>Deadlines</h3>
+  <div class="panel">
+    <dl class="kv">
+      <dt>Summer, non-EU</dt><dd><b>1 November – 15 December.</b> Fixed in the Zulassungsordnung §1, not just the website.</dd>
+      <dt>Summer, EU</dt><dd>1 November – 15 January</dd>
+      <dt>Winter, non-EU</dt><dd>1 March – 15 May (fallback round for WS 2027/28)</dd>
+      <dt>Higher semesters</dt><dd>1 November – 31 March — <b>not your route.</b> That window is for entrants with transferable master's-level credits. Don't plan against it.</dd>
+      <dt>Hard cut-offs</dt><dd>The <b>APS certificate cannot be submitted after the deadline</b>, and incomplete applications are not considered at all. Certificates not in German or English need an authorised translation.</dd>
+      <dt>Apply at</dt><dd>campus.uni-freiburg.de — follow their "instructions for the online application", the portal isn't intuitive</dd>
+    </dl>
+  </div>
+
+  <h3>The ECTS floors — Zulassungsordnung §2(2)</h3>
+  <p>The public pages state no numbers. The binding statute does. You must show <b>at least 110 ECTS in total</b> across foundations of mathematics, informatics, electrical engineering, microsystems technology and embedded systems, with these minimums inside it.</p>
+  <div class="tbl-scroll">
+    <table class="mods">
+      <tr><th>Area</th><th>Required</th><th>You have</th><th>Status</th></tr>
+      <tr><td class="m">Grundlagen der Informatik</td><td class="c">≥26</td><td class="c">~24.7</td><td><b style="color:var(--alert)">Short by ~1.3</b> — CS110, CS12L, Data Structures, Operating Systems, Machine Learning, Computer Networks. Add IoT, Digital Compression, the HW Integration Lab, or Project Work Phase II to clear it.</td></tr>
+      <tr><td class="m">Mathematik</td><td class="c">≥20</td><td class="c">27.43</td><td><b style="color:var(--verified)">Clears with room</b> — and still passes at 21.94 even without EC510. The first hard floor in the whole search you clear without the linear algebra argument.</td></tr>
+      <tr><td class="m">Physik + Elektrotechnik (jointly)</td><td class="c">≥20</td><td class="c">~110</td><td><b style="color:var(--verified)">Clears by 5×</b></td></tr>
+      <tr><td class="m">Mikrosystemtechnik</td><td class="c">≥10</td><td class="c">~16.5</td><td><b style="color:var(--signal)">Contestable</b> — rests on Sensors and Actuators plus both VLSI courses counting as Mikrosystemtechnik. Their own Advanced MSE table lists Micro-electronics, so the argument is reasonable. The courses you dislike are what carry this line.</td></tr>
+      <tr><td class="m">Total across all five</td><td class="c">≥110</td><td class="c">~178</td><td><b style="color:var(--verified)">Clears</b></td></tr>
+    </table>
+  </div>
+
+  <div class="panel good">
+    <h3>The escape hatch — §2(3)</h3>
+    <p style="margin-bottom:0">If you don't meet those requirements, the admissions commission <b>may impose conditions rather than reject you</b> — modules from the Technical Faculty or the Faculty of Mathematics and Physics, up to <b>30 ECTS</b>, completed alongside semesters one and two. Exams must pass by the end of semester two; a failure may be retaken once at the next date. §2(2) also allows outright exemptions from individual criteria. And you can't register your thesis until any condition is discharged. This is a fundamentally more forgiving structure than a single yes-or-no judgement.</p>
+  </div>
+
+  <h3>Requirements</h3>
+  <div class="panel">
+    <dl class="kv">
+      <dt>Degree</dt><dd>Bachelor in mechatronics, information technology, electronics or electrical engineering, computer science <b>or similar</b>; at least 180 ECTS over at least three years. ECE qualifies plainly.</dd>
+      <dt>Grade</dt><dd><b>2.9 or better</b> on the German scale. Your ~1.7 clears easily. No class-rank requirement anywhere.</dd>
+      <dt>Language</dt><dd>Either <b>English C1</b>, or German C1 plus English B2. IELTS Academic minimum <b>7.0</b> — you have 7.5. MOI letters explicitly not accepted, and unlike Saarland there is <b>no stated acceptance of expired tests</b>, so your IELTS date matters here.</dd>
+      <dt>Required documents</dt><dd>Diploma or certified copy · transcript showing all courses, credits, grades and overall average · English test result · CV · <b>APS certificate</b></dd>
+      <dt>The key document</dt><dd>§3(1)2 asks for <i>eine aussagekräftige inhaltliche Übersicht</i> — a substantive <b>content</b> overview of all coursework, certified. Not a grade sheet. This one document has to carry your informatics count, your microsystems argument, and EC510.</dd>
+      <dt>Motivation letter</dt><dd><b>Mandatory, not optional.</b> The faculty page lists it as optional, but ZImmO §3(2)4 requires non-EU applicants to submit a written statement of motivation and objectives plus a full account of educational background.</dd>
+      <dt>Optional extras</dt><dd>Letter of recommendation · class rank certificate · class average certificate · entrance exam result · <b>a description of the subjects covering maths, computer science and electronics</b> · GRE · GATE (Indian applicants only)</dd>
+      <dt>On the GRE</dt><dd>Optional here, and they note <b>all three sections matter</b>. Your AWA 2.5 can only hurt. <b>Leave it out</b> — the opposite of Saarland, where it's mandatory with no minimum.</dd>
+      <dt>Rejections</dt><dd>§4(3): a refusal must be issued <b>in writing, with reasons, and with instructions on legal remedy</b>. Unlike Saarland, you learn why.</dd>
+      <dt>The commission</dt><dd>Four professors — <b>two from Computer Science, two from Microsystems Engineering</b>. Two-year terms, simple majority, chair breaks ties. That composition is why a Mikrosystemtechnik floor exists at all.</dd>
+    </dl>
+  </div>
+
+  <h3>Structure</h3>
+  <div class="panel">
+    <dl class="kv">
+      <dt>Computer Science total</dt><dd>36–54 ECTS — Essential Lectures (18–36) + Specialization/Elective courses (18–36)</dd>
+      <dt>Microsystems total</dt><dd>36–54 ECTS — Advanced MSE (18–36) + Concentration Areas (18–36, at least 18 inside <b>one</b> area)</dd>
+      <dt>Customized Course Selection</dt><dd>Up to 18 ECTS, ungraded only</dd>
+      <dt>Coursework total</dt><dd>90 ECTS</dd>
+      <dt>Final phase</dt><dd>Thesis 27 ECTS over six months + colloquium 3 ECTS (~60 min: 20-minute presentation plus discussion, usually open to the public). <b>Needs 72 ECTS completed first.</b></dd>
+      <dt>Specializations</dt><dd>AI · Cyber-Physical Systems · Circuits and Systems · Materials and Fabrication · <b>Biomedical Engineering</b> · Photonics. Take ≥30 ECTS in one plus a thesis in that field and the certificate reads "Specialization Biomedical Engineering".</dd>
+    </dl>
+  </div>
+
+  <h3>Essential Lectures in Computer Science — choose 3 of 9</h3>
+  <p>All 6 ECTS, lecture plus exercise, written exam.</p>
+  <div class="tbl-scroll">
+    <table class="mods">
+      <tr><th>Module</th><th>ECTS</th><th>Lang</th><th>Term</th><th>What it covers</th></tr>
+      <tr><td class="m">Introduction to Embedded Systems<em>Becker / Scholl</em></td><td class="c">6</td><td><span class="pill both">DE/EN</span></td><td><span class="pill wi">Winter</span></td><td>The most on-topic module. Statecharts, Petri nets, VHDL, mapping specifications to processes, hardware/software codesign, processors, AD/DA converters, sensors and interfaces, optimisation for speed, energy and testability.</td></tr>
+      <tr><td class="m">Machine Learning<em>Hutter / Bödecker / Tangermann</em></td><td class="c">6</td><td><span class="pill en">EN</span></td><td><span class="pill wi">Winter</span></td><td>LDA, logistic regression, ICA, PCA, SVMs, kernel PCA, decision trees, random forests, neural networks, k-means, DBSCAN, bias-variance, regularisation. Python throughout. <b>35-minute oral exam.</b> Cross-listed into the Biomedical Engineering concentration.</td></tr>
+      <tr><td class="m">Cyber-Physical Systems – Discrete Models<em>Podelski</em></td><td class="c">6</td><td><span class="pill en">EN</span></td><td><span class="pill wi">Winter</span></td><td>Modelling CPS as transition systems, parallelism and communication, temporal logics (LTL, CTL, CTL*), explicit-state and symbolic BDD model checking, bounded model checking, SAT solvers.</td></tr>
+      <tr><td class="m">Computer Architecture<em>Becker / Scholl</em></td><td class="c">6</td><td><span class="pill both">DE/EN</span></td><td><span class="pill wi">Winter</span></td><td>Logic design, digital circuit verification, testing, placement and routing, single-cycle datapath, pipelining and hazards, parallelism, exceptions and interrupts. RISC-V instruction set.</td></tr>
+      <tr><td class="m">Algorithm Theory<em>Kuhn</em></td><td class="c">6</td><td><span class="pill en">EN</span></td><td><span class="pill wi">Winter</span></td><td>Divide and conquer, FFT, randomisation, amortised analysis, Fibonacci heaps, union-find, greedy algorithms, dynamic programming, network flows.</td></tr>
+      <tr><td class="m">Databases and Information Systems</td><td class="c">6</td><td><span class="pill de">DE</span></td><td><span class="pill wi">Winter</span></td><td>Database design and data models, manipulation languages, design theory, integrity, transaction management, physical organisation. <b>German lecture</b>, but English recordings exist, one exercise group runs in English, and coursework and exam may be done in English.</td></tr>
+      <tr><td class="m">Software Engineering<em>Podelski / Thiemann</em></td><td class="c">6</td><td><span class="pill en">EN</span></td><td><span class="pill su">Summer</span></td><td>Revision control, process models, requirements analysis, formal and semiformal modelling, OO analysis and design, design patterns, testing, program verification. Emphasis on formal methods.</td></tr>
+      <tr><td class="m">Foundations of Artificial Intelligence<em>Nebel / Burgard / Hutter</em></td><td class="c">6</td><td><span class="pill en">EN</span></td><td><span class="pill su">Summer</span></td><td>Agents, problem solving and search, logic and knowledge representation, action planning, reasoning under uncertainty, machine learning.</td></tr>
+      <tr><td class="m">Image Processing and Computer Graphics<em>Brox / Teschner</em></td><td class="c">6</td><td><span class="pill en">EN</span></td><td><span class="pill su">Summer</span></td><td>Point operations, linear and non-linear filters, segmentation, optical flow, calculus of variations, energy minimisation, rasterisation pipeline, transforms, colour spaces, illumination, textures. Adjacent to your gesture-recognition patent.</td></tr>
+    </table>
+  </div>
+
+  <h3>Advanced Microsystems Engineering — choose 3 of 8</h3>
+  <p>All 6 ECTS, written exam. This table is where the VLSI question gets decided.</p>
+  <div class="tbl-scroll">
+    <table class="mods">
+      <tr><th>Module</th><th>ECTS</th><th>Term</th><th>Notes</th></tr>
+      <tr><td class="m">Sensors<em>lecture + practical (V + Pr)</em></td><td class="c">6</td><td><span class="pill wi">Winter</span></td><td><b>Your route, and the fragile one.</b> Lab-based, so subject to capacity limits — first-come-first-served, groups typically 10–25.</td></tr>
+      <tr><td class="m">Modelling and System Identification</td><td class="c">6</td><td><span class="pill wi">Winter</span></td><td><b>Your route.</b> Also listed under the Cyber-Physical Systems specialization.</td></tr>
+      <tr><td class="m">Signal Processing</td><td class="c">6</td><td><span class="pill su">Summer</span></td><td><b>Your route</b>, and the only one of the three available in your first semester.</td></tr>
+      <tr><td class="m">Assembly and Packaging Technology<em>Wilde</em></td><td class="c">6</td><td><span class="pill su">Summer</span></td><td>Manufacturing electronic hardware, integration and contacting, environmental barriers. Fallback if the trio above fails.</td></tr>
+      <tr><td class="m">Micro-electronics</td><td class="c">6</td><td><span class="pill wi">Winter</span></td><td>The material you wanted to avoid</td></tr>
+      <tr><td class="m">Micro-mechanics</td><td class="c">6</td><td><span class="pill wi">Winter</span></td><td>—</td></tr>
+      <tr><td class="m">Micro-optics</td><td class="c">6</td><td><span class="pill wi">Winter</span></td><td>—</td></tr>
+      <tr><td class="m">MST Technologies and Processes</td><td class="c">6</td><td><span class="pill wi">Winter</span></td><td>—</td></tr>
+    </table>
+  </div>
+
+  <div class="panel warn">
+    <h3>What a summer start actually costs</h3>
+    <p>Both module tables carry the note "Semester = start in winter semester assumed," and the example study plan is built for a winter start. Semester 4 is the thesis, so coursework runs across semesters 1–3: <b>Su 2027 → Wi 2027/28 → Su 2028.</b></p>
+    <p>Requirements are not at risk. Your first semester offers Foundations of AI, Image Processing, and Software Engineering — all three CS essentials you need, 18 ECTS — plus Signal Processing and Assembly and Packaging, 12 more. A full 30-credit semester that clears one whole area.</p>
+    <p style="margin-bottom:0">The real cost is <b>risk concentration</b>. Twelve of the seventeen essential modules are winter-only, so with a summer start they all land in semester 2 with no second window. Specifically: <b>Sensors and Modelling and System Identification — the two courses that let you satisfy Advanced MSE without touching microfabrication — are both winter-only.</b> If either falls through, what remains in that table is exactly the material you wanted to avoid. Sensors is lab-based and capacity-limited, which makes it the single fragile point. Failure isn't fatal (auto-registration for retakes, Studienleistungen repeatable indefinitely, a fifth semester as fallback); missing a seat is the sharper risk.</p>
+  </div>
+
+  <h3>Worth remembering</h3>
+  <ul class="remember">
+    <li><b>Your goal is in their own profile document</b>"In medicine there are trends towards minimally-invasive surgery, advanced diagnostics or intelligent prostheses." Cite it in the motivation letter.</li>
+    <li><b>The faculty backs it</b>IMTEK research foci include Lab-on-a-Chip and Medical MEMS — chairs held by Thomas Stieglitz (Biomedical Microtechnology), Ulrich Egert (Biomicrotechnology), Gerald Urban (Sensors), Ulrike Wallrabe (Microactuators). On the CS side: Wolfram Burgard (Autonomous Intelligent Systems), Abhinav Valada (Robot Learning), Thomas Brox (Computer Vision), Frank Hutter (Machine Learning).</li>
+    <li><b>Your Saarland gaps are courses taught here</b>The CS elective list includes Functional Programming, Formal Methods for Java, CPS – Program Verification, Quantitative Verification, Test and Reliability, Hardware Security and Trust. Robotics: Introduction to Mobile Robotics, Robot Mapping, Social Robotics, Reinforcement Learning, Computer Vision, Statistical Pattern Recognition.</li>
+    <li><b>The thesis can be done externally</b>At a hosting organisation outside the faculty or even outside the university, when supervision and quality conditions are met. That's the Werkstudent → thesis → offer path, formally permitted.</li>
+    <li><b>No mandatory internship</b>But the handbook notes international students commonly take elective internships or place their thesis in industry — mostly found on their own initiative, some via professors' contacts.</li>
+    <li><b>A study project can replace elective CS courses</b>18 ECTS, assessed as a written report, working software, or a hardware demonstrator. Or up to two seminars at 3 ECTS each.</li>
+    <li><b>German counts toward the degree</b>One language course from the Faculty of Philology or Humanities, inside the Customized Course Selection. Their example plan puts a 6 ECTS SLI German course in semester 3.</li>
+    <li><b>Generous retake rules</b>Failed assessments repeat once; up to two may repeat a second time. You may switch to a different module once instead of retaking, and the failed attempt doesn't carry over. One passed exam may be retaken to improve the grade, by semester 3. Studienleistungen repeat as often as needed. But a failed exam auto-registers you for the retake, and you can only withdraw for illness or family emergency.</li>
+    <li><b>Every student gets a professor as mentor</b>Assigned to help organise your studies, and explicitly available on studying abroad and finding a job.</li>
+    <li><b>Exchange partners, mostly without extra tuition</b>Michigan, Tohoku, Tokyo, Kyoto, Ritsumeikan, DTU Denmark, ESIEE Paris — plus the EUCOR trinational campus.</li>
+    <li><b>Contacts</b>Applications: Ursula Epe, studienkoordination@tf.uni-freiburg.de, +49 761 203 8340. Curriculum: Martina Nopper and Dr. Frank Goldschmidtböing, studienberatung@ese.uni-freiburg.de, +49 761 203 7496.</li>
+    <li><b>The question to ask the advisers</b>Starting in the summer semester, can Sensors and Modelling and System Identification be reliably taken in the first winter semester, and are either subject to capacity limits?</li>
+  </ul>
+</section>
+
+<div class="uni-band">
+  <div class="wrapin">
+    <p class="kicker">Programme dossier · researched in depth</p>
+    <h2>Karlsruhe Institute of Technology</h2>
+    <p class="sub">M.Sc. Electrical Engineering and Information Technology · SPO 2025 · KIT Department of ETIT</p>
+    <div class="factstrip">
+      <div><span class="k">Window SS27</span><span class="v">1 Dec – 15 Jan</span></div>
+      <div><span class="k">Blocker</span><span class="v" style="color:var(--signal)">GRE minimums</span></div>
+      <div><span class="k">Duration</span><span class="v">4 sem · 120 CP · max 8</span></div>
+      <div><span class="k">Tuition</span><span class="v">€1,500/sem</span></div>
+      <div><span class="k">Language</span><span class="v">English</span></div>
+      <div><span class="k">Admission</span><span class="v">Restricted · ranked</span></div>
+    </div>
+  </div>
+</div>
+
+<section class="sar reveal">
+  <h3>Deadlines</h3>
+  <div class="panel">
+    <dl class="kv">
+      <dt>Summer semester</dt><dd><b>1 December 2026 – 15 January 2027.</b> The window doesn't open until December — this is the latest of all four deadlines, and it sits after RPTU, Saarland and Freiburg. KIT doesn't compete with them for your attention.</dd>
+      <dt>Winter semester</dt><dd>15 May – 15 July</dd>
+      <dt>Higher semester, non-EU</dt><dd>Same dates as first semester: 15 July / 15 January</dd>
+      <dt>Apply</dt><dd>Directly at the university. Run the <b>Self Assessment Tool</b> on the ETIT application page first.</dd>
+    </dl>
+  </div>
+
+  <div class="panel warn">
+    <h3>The blocker: GRE minimum scores</h3>
+    <div class="tbl-scroll">
+      <table class="mods">
+        <tr><th>Section</th><th>Required</th><th>Yours</th><th>Gap</th></tr>
+        <tr><td class="m">Verbal Reasoning</td><td class="c">151</td><td class="c">148</td><td>−3</td></tr>
+        <tr><td class="m">Quantitative Reasoning</td><td class="c">164</td><td class="c">156</td><td><b style="color:var(--alert)">−8 — the serious one.</b> 156 ≈ 62nd percentile, 164 ≈ 85th.</td></tr>
+        <tr><td class="m">Analytical Writing</td><td class="c">4.0</td><td class="c">2.5</td><td>−1.5</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:16px">These are stated minimums, not scoring components — a precondition for entering the process at all. Required of anyone with a degree from outside the EHEA who isn't a Lisbon Convention signatory.</p>
+    <p><b>The GATE alternative:</b> KIT accepts GATE <b>in the Electrical Engineering discipline</b>. You'd been considering GATE EC — Electronics and Communication is a separate paper, so whether EC is accepted needs asking. Either way GATE 2027 runs in February with March results, months after the January deadline.</p>
+    <p style="margin-bottom:0"><b>But the timeline works.</b> With the deadline at 15 January you'd need official scores by early January, so you could test as late as mid-December — roughly 15 weeks, with nothing else on the calendar after Freiburg closes on 15 December. Also check your existing GRE date: <b>scores expire after five years</b>, and Saarland requires a GRE too (with no minimum). One retake may serve both.</p>
+  </div>
+
+  <h3>The academic gate — which you clear easily</h3>
+  <div class="tbl-scroll">
+    <table class="mods">
+      <tr><th>Requirement</th><th>Needed</th><th>You have</th><th>Source</th></tr>
+      <tr><td class="m">Higher Mathematics</td><td class="c">14 CP</td><td class="c" style="color:var(--verified)"><b>27.43</b></td><td>Nearly double. The lowest maths floor of anything you've looked at.</td></tr>
+      <tr><td class="m">Linear electrical networks, electromagnetic fields and waves, electronic circuits</td><td class="c">19 CP</td><td class="c" style="color:var(--verified)"><b>~33</b></td><td>EE110, EC310, EC330, EC410, EC450, EC530</td></tr>
+      <tr><td class="m">Digital technology, information technology, measurement and control, signals and systems</td><td class="c">17 CP</td><td class="c" style="color:var(--verified)"><b>~27.5</b></td><td>EC340, EC350, EC430, EC540, EC550</td></tr>
+      <tr><td class="m">Degree</td><td class="c">180 ECTS, ≥3 years</td><td class="c" style="color:var(--verified)"><b>240</b></td><td>ECE is a related programme; the commission may recognise other engineering or science degrees in exceptional cases</td></tr>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h3>Then you're scored, out of 80</h3>
+    <dl class="kv">
+      <dt>The four components</dt><dd>Mathematics (up to 20) · Fundamentals of Electrical Engineering (up to 20) · Digital Technology, Information Technology and Systems Engineering (up to 20) · <b>final bachelor grade (up to 20)</b></dd>
+      <dt>≥50 points</dt><dd>You enter the selection process directly</dd>
+      <dt>&lt;50 points</dt><dd>You <b>may</b> be invited to a 20-minute online interview in English, worth up to 20 further points. Score ≥10 and you enter selection. Note: applicants admissible without interview have priority, and if there are enough of them <b>no interviews are held at all</b>.</dd>
+      <dt>Then</dt><dd>Admission has been restricted since WS 2025/26. Qualifying applicants are assigned a <b>ranking place</b> on course content and overall bachelor grade. First-semester capacity is limited — clearing the gate is not the same as getting in.</dd>
+      <dt>Binding document</dt><dd>Satzung für das hochschuleigene Zugangs- und Auswahlverfahren, 27 February 2025 (German only). The website is explicitly only an overview.</dd>
+    </dl>
+  </div>
+
+  <h3>Structure — a different architecture entirely</h3>
+  <p>No essential lectures everyone takes. You choose <b>one of four Fields of Specialization</b>, and that choice defines half the degree.</p>
+  <div class="panel">
+    <dl class="kv">
+      <dt>Field of Specialization</dt><dd><b>60 CP</b> — Fundamentals (min 24) + Focus Area (min 24) + <b>exactly one Lab Course</b></dd>
+      <dt>Electives</dt><dd>24 CP, free choice from across KIT, including at most one further lab</dd>
+      <dt>Interdisciplinary Qualifications</dt><dd>6 CP, <b>ungraded</b>, offered DE/EN — where a German language course would sit</dd>
+      <dt>Master's Thesis</dt><dd>30 CP</dd>
+      <dt>Grading</dt><dd>Weighted average by credits</dd>
+    </dl>
+  </div>
+
+  <h3>Field 1 — Automation, Robotics, and Systems Engineering</h3>
+  <p>Your likely choice, and the field KIT uses for its own exemplary study plan. Sub-tracks: Measurement/Sensing &amp; Signal Processing (Heizmann, Wahls, Zwick) · Automation, Control &amp; Robotics (Barth, Hohmann) · Systems Engineering (Sax).</p>
+  <div class="tbl-scroll">
+    <table class="mods">
+      <tr><th>Module</th><th>CP</th><th>Lang</th><th>Area</th><th>Notes</th></tr>
+      <tr><td class="m">Cyber-Physical Modeling</td><td class="c">6</td><td><span class="pill en">EN</span></td><td>Fundamentals</td><td>Summer term</td></tr>
+      <tr><td class="m">Optimal Control</td><td class="c">6</td><td><span class="pill en">EN</span></td><td>Fundamentals</td><td>Winter — also appears in three other fields</td></tr>
+      <tr><td class="m">Robotic Intelligence: Perception and Scene Understanding</td><td class="c">6</td><td><span class="pill en">EN</span></td><td>Fundamentals</td><td>The robotics anchor</td></tr>
+      <tr><td class="m">Signal Processing Methods</td><td class="c">6</td><td><span class="pill en">EN</span></td><td>Fundamentals</td><td>Winter</td></tr>
+      <tr><td class="m">Systems and Software Engineering</td><td class="c">6</td><td><span class="pill en">EN</span></td><td>Fundamentals</td><td>Closest to your professional background</td></tr>
+      <tr><td class="m">Optical Engineering and Machine Vision</td><td class="c">6</td><td><span class="pill en">EN</span></td><td>Fundamentals</td><td>Adjacent to the gesture-recognition patent</td></tr>
+      <tr><td class="m">Systems Engineering for Automotive Electronics</td><td class="c">4</td><td><span class="pill en">EN</span></td><td>Focus</td><td><b>Closest single module to your Mercedes-Benz work</b></td></tr>
+      <tr><td class="m">Hardware/Software Co-Design</td><td class="c">6</td><td><span class="pill en">EN</span></td><td>Focus</td><td>Core embedded content</td></tr>
+      <tr><td class="m">Hardware Synthesis and Optimization</td><td class="c">6</td><td><span class="pill en">EN</span></td><td>Focus</td><td>—</td></tr>
+      <tr><td class="m">Hardware Modeling and Simulation</td><td class="c">4</td><td><span class="pill en">EN</span></td><td>Focus</td><td>—</td></tr>
+      <tr><td class="m">Multivariable Control Systems</td><td class="c">6</td><td><span class="pill en">EN</span></td><td>Focus</td><td>Your control column was thin — this fixes it</td></tr>
+      <tr><td class="m">Nonlinear Control Systems</td><td class="c">6</td><td><span class="pill en">EN</span></td><td>Focus</td><td>—</td></tr>
+      <tr><td class="m">Navigation and Localization Techniques</td><td class="c">3</td><td><span class="pill en">EN</span></td><td>Focus</td><td>—</td></tr>
+      <tr><td class="m">Digital Twin Engineering</td><td class="c">4</td><td><span class="pill en">EN</span></td><td>Focus</td><td>—</td></tr>
+      <tr><td class="m">Communication Systems and Protocols</td><td class="c">5</td><td><span class="pill en">EN</span></td><td>Focus</td><td>—</td></tr>
+      <tr><td class="m">IT/OT-Security Seminar · Radar Systems Engineering · Laser Metrology · Practical Tools for Control Engineers · Spaceborne Radar Remote Sensing · Software Engineering · Seminar Industrial Process and Plant Engineering</td><td class="c">3–6</td><td><span class="pill en">EN</span></td><td>Focus</td><td>Remaining English focus modules</td></tr>
+      <tr><td class="m">Seminar eingebettete Systeme · Test eingebetteter Systeme im industriellen Umfeld · Sensoren · Informationsfusion · Informationstechnik in der Industriellen Automation · Praktisches Machine Learning · Prozessanalyse · Verteilte ereignisdiskrete Systeme · Quantum Machine Learning · Projektmanagement für sicherheitskritische Anwendungen</td><td class="c">3–6</td><td><span class="pill de">DE</span></td><td>Focus</td><td><b>Note what's on the German side</b> — the embedded-systems seminars, industrial automation and sensors modules. The English offering is enough to build a full field, but not the whole field.</td></tr>
+      <tr><td class="m">Robotics, Automation and Systems Control Lab · Mechatronic Measurement Systems Lab · Signal Processing Lab · Seamless Engineering · Student Innovation Lab</td><td class="c">6–9</td><td><span class="pill en">EN</span></td><td>Lab</td><td><b>Exactly one required.</b> German labs also exist: Praktikum Entwurf Digitaler Systeme, Praktikum Software Engineering, Praktikum System-on-Chip.</td></tr>
+    </table>
+  </div>
+
+  <h3>The other three fields</h3>
+  <div class="tbl-scroll">
+    <table class="mods">
+      <tr><th>Field</th><th>Sub-tracks</th><th>Notes</th></tr>
+      <tr><td class="m">Information and Communication Technology</td><td>Communication Systems · Communication Algorithms &amp; Information Theory · Signal and Information Processing · Microwave Systems · Photonic Systems · <b>Embedded System Integration (Becker)</b></td><td>The Embedded System Integration sub-track is the second-best fit after Automation/Robotics. Fundamentals: Advanced Communications Engineering, Hardware/Software Co-Design, Modern Radio Systems Engineering, Optical Networks and Systems, Signal Processing Methods, Numerical Methods with Programming Practice. Labs include Digital Hardware Design Lab and Communications Engineering Lab.</td></tr>
+      <tr><td class="m">Electrical Power Systems and Electromobility</td><td>Power electronic systems · Renewables · Electrochemical systems · Power systems engineering &amp; economics · Superconductors · Electromobility · Electric drives</td><td>Batteries, fuel cells, grids, drives. Off your track.</td></tr>
+      <tr><td class="m">Microelectronics, Photonics, and Quantum Technologies</td><td>Microelectronics · Radio Frequency Electronics · Quantum Technologies · Optics and Photonics</td><td><b>Rule this out.</b> Analog Circuit Design, Digital Circuit Design, Mixed-Signal IC Design, Modern VLSI Technologies — exactly the material you don't want.</td></tr>
+    </table>
+  </div>
+
+  <h3>The 24 free elective credits are KIT's real advantage</h3>
+  <p>The handbook runs to 656 pages because Electives draw from across the whole university — mechanical engineering, informatics, mathematics, economics. Relevant to the surgical-robotics goal:</p>
+  <div class="tbl-scroll">
+    <table class="mods">
+      <tr><th>Module</th><th>Why it matters</th></tr>
+      <tr><td class="m">BioMEMS — Microsystems Technologies for Life Sciences and Medicine I, II, III</td><td>A three-part sequence in medical microsystems</td></tr>
+      <tr><td class="m">Medical Image Processing for Guidance and Navigation</td><td><b>That title is essentially image-guided surgery.</b> The single most on-target module in your whole search.</td></tr>
+      <tr><td class="m">Optical Systems in Medicine and Life Science</td><td>Medical optics — endoscopy territory</td></tr>
+      <tr><td class="m">Modeling Physiological Systems · Human Brain and Central Nervous System</td><td>Physiological modelling and neurophysiology</td></tr>
+      <tr><td class="m">Biologically Inspired Robots · Machine Vision · Automotive Vision · Localization of Mobile Agents</td><td>Robotics and vision from the mechanical and informatics faculties</td></tr>
+      <tr><td class="m">Design and Architectures of Embedded Systems (ESII) · Optimization and Synthesis of Embedded Systems (ESI) · Low Power Design</td><td>Dedicated embedded modules from the informatics faculty</td></tr>
+      <tr><td class="m">Deep Learning and Neural Networks · Multimodal Artificial Intelligence · Pattern Recognition · Computational Imaging · Machine Learning 1 and 2</td><td>ML depth, relevant to your patent and IEEE paper</td></tr>
+      <tr><td class="m">Introduction to Microsystem Technology I · Microactuators · Microsystem Technology</td><td>If the microsystems side ever becomes useful</td></tr>
+    </table>
+  </div>
+
+  <h3>Worth remembering</h3>
+  <ul class="remember">
+    <li><b>PhD is a stated qualification goal</b>Graduates are described in the handbook as "capable of further qualification through a doctorate program (PhD)". Medical engineering is named among the main application fields.</li>
+    <li><b>External theses are permitted but procedurally strict</b>The examiner signs a confirmation of supervision, issued only after you submit an <b>approved individual study plan</b>. That plan <b>cannot be changed later</b>, and working on the thesis before formal approval is not permitted. Plan the Werkstudent-to-thesis route early rather than improvising it.</li>
+    <li><b>You may be able to transfer credits in</b>Recognition of external achievements is possible — including from <b>outside the higher education system</b>, at institutions with standardised quality assurance. Refused if more than 50% of the curriculum would be substituted. <b>The application must be made within your first semester after enrolment.</b> With three years of professional engineering behind you, worth exploring.</li>
+    <li><b>Exactly one lab course inside your field</b>Plus at most one more as an elective. Labs run 6–9 CP.</li>
+    <li><b>Eight semesters maximum</b>Against four standard. More headroom than most.</li>
+    <li><b>Double degrees available</b>Grenoble INP, Sofia, Budapest — binational study without losing time. Plus Erasmus+, free-mover semesters, and Eucor (the trinational Upper Rhine campus) for individual courses or full semesters.</li>
+    <li><b>The exemplary study plan is stale</b>It's labelled SPO 2023 while the rest of the handbook is SPO 2025, and it assumes a winter start. Treat as illustrative. As with Freiburg, check the winter/summer column against each module — a summer start reorders availability.</li>
+    <li><b>Best of both rankings</b>TU9 and Excellence University, in the strongest job region of anywhere you're applying — Karlsruhe's IT cluster, with Stuttgart's automotive belt an hour away. If the GRE retake succeeds, this is the best outcome available to you.</li>
+    <li><b>Links</b>sle.kit.edu/english/vorstudium/master-electrical-engineering-information-technology.php · etit.kit.edu/english/Application_Master_ETIT.php (Self Assessment Tool) · www.etit.kit.edu</li>
+  </ul>
+</section>
+
+<footer>
+  <span>Compiled 30 Aug 2026 · verify every date against the university's own page</span>
+  <span>Fallback: Winter 2027/28 deadlines land around 15 May 2027</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var first = new Date(2026,9,31); // 31 Oct 2026
+  var now = new Date();
+  var wks = Math.max(0, Math.round((first-now)/(1000*60*60*24*7)));
+  document.getElementById('wk').textContent = wks;
+
+  if(window.matchMedia && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    },{threshold:.08});
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+</body>
+</html>
